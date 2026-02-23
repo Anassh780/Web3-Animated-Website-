@@ -1,17 +1,31 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { TrendingUp, Wallet, Activity, ChevronRight } from "lucide-react";
 
 export function DashboardPreview() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start end", "end start"],
+    });
+
+    // Suble 3D Tilt
+    const rotateX = useTransform(scrollYProgress, [0, 1], [10, -10]);
+    const rotateY = useTransform(scrollYProgress, [0, 1], [-5, 5]);
+    const springRotateX = useSpring(rotateX, { stiffness: 100, damping: 30 });
+    const springRotateY = useSpring(rotateY, { stiffness: 100, damping: 30 });
+
     return (
-        <section className="relative w-full max-w-6xl mx-auto px-6 -mt-10 mb-32 z-20" id="dashboard">
+        <section ref={sectionRef} className="relative w-full max-w-6xl mx-auto px-6 -mt-10 mb-32 z-20 perspective-1000" id="dashboard">
             <motion.div
                 initial={{ opacity: 0, y: 60, scale: 0.95 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, amount: 0.2, margin: "-50px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative rounded-3xl p-1 bg-gradient-to-b from-white/10 to-transparent overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]"
+                style={{ rotateX: springRotateX, rotateY: springRotateY }}
+                className="relative rounded-3xl p-1 bg-gradient-to-b from-white/10 to-transparent overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] will-change-transform"
             >
                 <div className="absolute inset-0 bg-purple-500/5 blur-[100px] pointer-events-none" />
 
@@ -29,28 +43,43 @@ export function DashboardPreview() {
 
                     {/* Left Column: KPI Cards */}
                     <div className="w-full md:w-1/3 flex flex-col gap-4 mt-10 md:mt-8">
-                        <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-1">
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-1 hover:bg-white/10 transition-colors cursor-default"
+                        >
                             <div className="flex items-center justify-between text-slate-400 text-sm font-semibold">
                                 <span className="flex items-center gap-2"><Wallet className="w-4 h-4" /> Total Value Locked</span>
                                 <span className="text-purple-400 flex items-center text-xs bg-purple-500/10 px-2 py-0.5 rounded"><TrendingUp className="w-3 h-3 mr-1" /> +14.2%</span>
                             </div>
                             <div className="text-3xl font-black font-heading mt-2">$24,592,100</div>
-                        </div>
+                        </motion.div>
 
-                        <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-1">
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-1 hover:bg-white/10 transition-colors cursor-default"
+                        >
                             <div className="flex items-center justify-between text-slate-400 text-sm font-semibold">
                                 <span className="flex items-center gap-2"><Activity className="w-4 h-4" /> 24h Yield (Auto)</span>
                                 <span className="text-purple-400 flex items-center text-xs bg-purple-500/10 px-2 py-0.5 rounded"><TrendingUp className="w-3 h-3 mr-1" /> +2.4%</span>
                             </div>
                             <div className="text-3xl font-black font-heading mt-2">+$18,240</div>
-                        </div>
+                        </motion.div>
 
-                        <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col flex-1">
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                            className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col flex-1"
+                        >
                             <div className="text-slate-400 text-sm font-semibold mb-4">Active Strategies</div>
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/30 transition-colors cursor-pointer group">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-400 text-purple-400 border border-purple-500/30">L2</div>
+                                        <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-400 border border-purple-500/30">L2</div>
                                         <div className="text-sm font-semibold">Arbitrum ETH-USDC</div>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-purple-400 transition-colors" />
@@ -63,7 +92,7 @@ export function DashboardPreview() {
                                     <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-purple-400 transition-colors" />
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* Right Column: Chart Area */}

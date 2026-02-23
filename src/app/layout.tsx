@@ -20,8 +20,6 @@ export const metadata: Metadata = {
 };
 
 import { SmoothScroll } from '@/components/SmoothScroll';
-import { LiveActivityFeed } from '@/components/LiveActivityFeed';
-import { LivePriceTicker } from '@/components/LivePriceTicker';
 
 export default function RootLayout({
   children,
@@ -34,9 +32,7 @@ export default function RootLayout({
         className={`${jakarta.variable} ${outfit.variable} font-body antialiased bg-[#030303] text-white selection:bg-purple-500/30 selection:text-white`}
         suppressHydrationWarning
       >
-        <LivePriceTicker />
         <SmoothScroll>{children}</SmoothScroll>
-        <LiveActivityFeed />
       </body>
     </html>
   );

@@ -41,26 +41,37 @@ const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
         opacity: 1,
-        transition: { staggerChildren: 0.1 },
+        transition: { staggerChildren: 0.12, delayChildren: 0.2 },
     },
 };
 
 const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } },
+    hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
+    show: {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        transition: { type: "spring", stiffness: 100, damping: 20 }
+    },
 };
 
 export function Features() {
     const ref = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({
         target: ref,
-        offset: ["0 1", "1 0"], // from top hitting bottom, to bottom hitting top
+        offset: ["start end", "end start"],
     });
 
-    const yParallax = useTransform(scrollYProgress, [0, 1], [50, -50]); // Moves up as you scroll down
+    const yParallax = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
     return (
-        <section ref={ref} className="py-24 px-6 relative z-10" id="features">
+        <section ref={ref} className="py-24 px-6 relative z-10 overflow-hidden" id="features">
+            {/* Background Glow Follower */}
+            <motion.div
+                style={{ y: yParallax }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-purple-500/5 rounded-full blur-[160px] pointer-events-none -z-10"
+            />
+
             <div className="container mx-auto max-w-6xl">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -82,28 +93,27 @@ export function Features() {
                 </motion.div>
 
                 <motion.div
-                    style={{ y: yParallax }}
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="show"
-                    viewport={{ once: true, amount: 0.2, margin: "-50px" }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 will-change-transform"
+                    viewport={{ once: true, amount: 0.1, margin: "-50px" }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                     {features.map((feature, i) => (
                         <motion.div
                             key={i}
                             variants={itemVariants}
-                            className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:border-purple-500/30 hover:bg-white/10 transition-all group hover:-translate-y-2 relative overflow-hidden"
+                            className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:border-purple-500/30 hover:bg-white/10 transition-all duration-500 group relative overflow-hidden will-change-transform"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                            <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 text-purple-400 group-hover:scale-110 transition-transform">
+                            <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 text-purple-400 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500">
                                 <feature.icon className="w-7 h-7" />
                             </div>
-                            <h3 className="text-xl font-bold font-heading mb-3 text-white">
+                            <h3 className="text-xl font-bold font-heading mb-3 text-white group-hover:text-purple-300 transition-colors">
                                 {feature.title}
                             </h3>
-                            <p className="text-slate-400 text-sm leading-relaxed">
+                            <p className="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors">
                                 {feature.desc}
                             </p>
                         </motion.div>
